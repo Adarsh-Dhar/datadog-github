@@ -1,0 +1,39 @@
+name: DataHub PR Guardian demo
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  models: read
+
+jobs:
+  guardian:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install action dependencies
+        run: npm install
+        working-directory: datahub-pr-guardian
+      - name: Run DataHub PR Guardian
+        run: node datahub-pr-guardian/src/index.js
+        env:
+          DATAHUB_GMS_URL: ${{ secrets.DATAHUB_GMS_URL }}
+          DATAHUB_TOKEN: ${{ secrets.DATAHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          LLM_TOKEN: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          DATAHUB_PLATFORM: duckdb
+          DATAHUB_ENV: PROD
+          DATAHUB_DATASET_PREFIX: pr_guardian_demo.main
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.pull_request.base.repo.name }}
