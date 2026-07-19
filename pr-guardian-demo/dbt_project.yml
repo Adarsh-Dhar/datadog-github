@@ -1,0 +1,14 @@
+name: pr_guardian_demo
+version: 1.0.0
+config-version: 2
+
+profile: pr_guardian_demo
+model-paths: ["models"]
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  pr_guardian_demo:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table

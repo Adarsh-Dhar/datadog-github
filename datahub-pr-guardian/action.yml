@@ -1,0 +1,39 @@
+name: DataHub PR Guardian
+description: Flags breaking schema changes using DataHub lineage before merge
+inputs:
+  datahub-gms-url:
+    description: Base URL for the DataHub GMS service
+    required: true
+  datahub-token:
+    description: DataHub personal access token
+    required: true
+  github-token:
+    description: GitHub token used to upsert the pull-request comment
+    required: true
+  llm-token:
+    description: GitHub Models token used to generate the impact summary
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Install action dependencies
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm install --no-audit --no-fund
+    - name: Analyze pull-request impact
+      shell: bash
+      working-directory: ${{ github.workspace }}
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        DATAHUB_GMS_URL: ${{ inputs.datahub-gms-url }}
+        DATAHUB_TOKEN: ${{ inputs.datahub-token }}
+        LLM_TOKEN: ${{ inputs.llm-token }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        REPO_OWNER: ${{ github.repository_owner }}
+        REPO_NAME: ${{ github.event.repository.name }}
+        BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      run: node "${{ github.action_path }}/src/index.js"

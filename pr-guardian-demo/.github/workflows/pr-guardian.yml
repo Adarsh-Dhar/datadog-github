@@ -1,0 +1,25 @@
+name: DataHub PR Guardian demo
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  models: read
+
+jobs:
+  guardian:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      # Replace your-github-handle with the owner of the submission repository.
+      - uses: your-github-handle/datahub-pr-guardian@main
+        with:
+          datahub-gms-url: ${{ secrets.DATAHUB_GMS_URL }}
+          datahub-token: ${{ secrets.DATAHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          llm-token: ${{ secrets.GITHUB_MODELS_TOKEN }}

@@ -1,0 +1,36 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Source tables supplied by the order-processing application.
+    tables:
+      - name: orders
+        columns:
+          - name: order_id
+            tests: [not_null, unique]
+          - name: customer_id
+            tests: [not_null]
+          - name: order_status
+          - name: order_total
+          - name: created_at
+
+models:
+  - name: stg_orders
+    description: Cleaned order records used by the finance marts.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+  - name: fct_revenue
+    description: Completed orders used for revenue reporting.
+    columns:
+      - name: order_id
+        tests: [not_null, unique]
+      - name: customer_id
+        description: Customer identifier used to filter revenue dashboards.
+  - name: dim_customers
+    description: Customer-level lifetime revenue metrics.
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]

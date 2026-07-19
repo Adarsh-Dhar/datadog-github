@@ -1,0 +1,16 @@
+{
+  "name": "datahub-pr-guardian",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Action that identifies risky dbt changes with DataHub lineage.",
+  "main": "src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.0"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  }
+}
