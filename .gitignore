@@ -1,0 +1,5 @@
+datahub-pr-guardian/node_modules/
+pr-guardian-demo/dbt_packages/
+pr-guardian-demo/logs/
+pr-guardian-demo/target/
+pr-guardian-demo/*.duckdb

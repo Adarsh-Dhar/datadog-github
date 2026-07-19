@@ -13,6 +13,18 @@ inputs:
   llm-token:
     description: GitHub Models token used to generate the impact summary
     required: true
+  datahub-platform:
+    description: DataHub platform recorded for the dbt target
+    required: false
+    default: dbt
+  datahub-env:
+    description: DataHub environment recorded for the dbt target
+    required: false
+    default: PROD
+  datahub-dataset-prefix:
+    description: Optional dataset namespace preceding the model name in the DataHub URN
+    required: false
+    default: ""
 runs:
   using: composite
   steps:
@@ -30,6 +42,9 @@ runs:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         DATAHUB_GMS_URL: ${{ inputs.datahub-gms-url }}
         DATAHUB_TOKEN: ${{ inputs.datahub-token }}
+        DATAHUB_PLATFORM: ${{ inputs.datahub-platform }}
+        DATAHUB_ENV: ${{ inputs.datahub-env }}
+        DATAHUB_DATASET_PREFIX: ${{ inputs.datahub-dataset-prefix }}
         LLM_TOKEN: ${{ inputs.llm-token }}
         PR_NUMBER: ${{ github.event.pull_request.number }}
         REPO_OWNER: ${{ github.repository_owner }}

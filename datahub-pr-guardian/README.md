@@ -26,12 +26,15 @@ the reviewed impact in DataHub.
    npm test
    ~~~
 
-2. Ingest the demo project before opening a demonstration pull request:
+2. Install the local demo tooling, then ingest the demo project before opening
+   a demonstration pull request:
 
    ~~~sh
+   python3 -m pip install 'acryl-datahub[dbt]' dbt-duckdb
    cd ../pr-guardian-demo
-   dbt parse
-   dbt docs generate
+   dbt --profiles-dir . seed
+   dbt --profiles-dir . build
+   dbt --profiles-dir . docs generate
    datahub ingest -c datahub-ingestion.yml
    ~~~
 
@@ -58,7 +61,9 @@ urn:li:dataset:(urn:li:dataPlatform:dbt,MODEL_NAME,PROD)
 
 Set DATAHUB_PLATFORM, DATAHUB_ENV, or DATAHUB_DATASET_PREFIX when the dbt
 ingestion recipe uses a different platform, environment, or dataset namespace.
-Copy one URN from DataHub's UI to validate this before the demo.
+The included local recipe uses platform duckdb and environment PROD; supply
+those as Action inputs. Copy one URN from DataHub's UI and set the optional
+prefix before the demo if its dataset name includes a database or schema.
 
 The lineaged lookup uses DataHub GraphQL searchAcrossLineage with DOWNSTREAM
 direction and degree 1 and 2 filters. The writeback mutation is intentionally

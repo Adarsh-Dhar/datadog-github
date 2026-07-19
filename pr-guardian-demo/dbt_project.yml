@@ -4,6 +4,7 @@ config-version: 2
 
 profile: pr_guardian_demo
 model-paths: ["models"]
+seed-paths: ["seeds"]
 clean-targets: ["target", "dbt_packages"]
 
 models:
@@ -12,3 +13,9 @@ models:
       +materialized: view
     marts:
       +materialized: table
+
+seeds:
+  pr_guardian_demo:
+    raw_orders:
+      +alias: orders
+      +schema: raw

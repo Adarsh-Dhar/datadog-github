@@ -1,0 +1,7 @@
+pr_guardian_demo:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: pr_guardian_demo.duckdb
+      schema: main

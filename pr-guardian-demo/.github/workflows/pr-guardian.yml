@@ -16,10 +16,12 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      # Replace your-github-handle with the owner of the submission repository.
-      - uses: your-github-handle/datahub-pr-guardian@main
+      # The Action lives in a subdirectory of this public repository.
+      - uses: Adarsh-Dhar/datadog-github/datahub-pr-guardian@main
         with:
           datahub-gms-url: ${{ secrets.DATAHUB_GMS_URL }}
           datahub-token: ${{ secrets.DATAHUB_TOKEN }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           llm-token: ${{ secrets.GITHUB_MODELS_TOKEN }}
+          datahub-platform: duckdb
+          datahub-env: PROD

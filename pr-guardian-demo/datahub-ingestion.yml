@@ -5,7 +5,7 @@ source:
   config:
     manifest_path: ./target/manifest.json
     catalog_path: ./target/catalog.json
-    target_platform: snowflake
+    target_platform: duckdb
     env: PROD
     include_column_lineage: true
 

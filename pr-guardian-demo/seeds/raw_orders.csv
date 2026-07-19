@@ -1,0 +1,6 @@
+order_id,customer_id,order_status,order_total,created_at
+1001,customer_001,completed,125.50,2026-07-01 09:15:00
+1002,customer_002,completed,89.99,2026-07-02 14:30:00
+1003,customer_001,cancelled,42.00,2026-07-03 11:00:00
+1004,customer_003,completed,250.00,2026-07-04 16:45:00
+1005,customer_002,completed,74.25,2026-07-05 08:20:00
