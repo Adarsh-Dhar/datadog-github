@@ -25,3 +25,4 @@ jobs:
           llm-token: ${{ secrets.GITHUB_MODELS_TOKEN }}
           datahub-platform: duckdb
           datahub-env: PROD
+          datahub-dataset-prefix: pr_guardian_demo.main

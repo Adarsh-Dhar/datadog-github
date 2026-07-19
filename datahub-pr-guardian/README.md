@@ -32,9 +32,9 @@ the reviewed impact in DataHub.
    ~~~sh
    python3 -m pip install 'acryl-datahub[dbt]' dbt-duckdb
    cd ../pr-guardian-demo
-   dbt --profiles-dir . seed
-   dbt --profiles-dir . build
-   dbt --profiles-dir . docs generate
+   dbt seed --profiles-dir .
+   dbt build --profiles-dir .
+   dbt docs generate --profiles-dir .
    datahub ingest -c datahub-ingestion.yml
    ~~~
 
@@ -61,9 +61,11 @@ urn:li:dataset:(urn:li:dataPlatform:dbt,MODEL_NAME,PROD)
 
 Set DATAHUB_PLATFORM, DATAHUB_ENV, or DATAHUB_DATASET_PREFIX when the dbt
 ingestion recipe uses a different platform, environment, or dataset namespace.
-The included local recipe uses platform duckdb and environment PROD; supply
-those as Action inputs. Copy one URN from DataHub's UI and set the optional
-prefix before the demo if its dataset name includes a database or schema.
+The included local recipe uses platform duckdb and environment PROD. Its dbt
+manifest resolves fct_revenue to pr_guardian_demo.main.fct_revenue, so the demo
+workflow passes that value as its dataset-prefix input. Copy one URN from
+DataHub's UI before a non-demo deployment and adjust the optional prefix when
+its dataset name includes a database or schema.
 
 The lineaged lookup uses DataHub GraphQL searchAcrossLineage with DOWNSTREAM
 direction and degree 1 and 2 filters. The writeback mutation is intentionally
