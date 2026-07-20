@@ -3,6 +3,7 @@ name: DataHub PR Guardian demo
 on:
   pull_request:
     types: [opened, synchronize]
+  workflow_dispatch:
 
 permissions:
   contents: read
