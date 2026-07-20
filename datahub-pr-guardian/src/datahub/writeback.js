@@ -11,7 +11,7 @@ async function writeIncidentNote(modelName, prNumber, summary) {
   const urn = modelNameToUrn(modelName);
   const note = "[PR Guardian] Reviewed in PR #" + prNumber + ". " + summary;
   return graphqlRequest(WRITEBACK_MUTATION, {
-    input: { urn, description: note },
+    input: { resourceUrn: urn, description: note },
   });
 }
 
