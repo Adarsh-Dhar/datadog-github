@@ -47,8 +47,14 @@ guardian pass 22s
 The GitHub Actions bot posted the real PR Guardian comment:
 https://github.com/Adarsh-Dhar/datadog-github/pull/2#issuecomment-5031829798
 
-The comment reported `stg_orders` as HIGH risk, detected the dropped
-`customer_id` column, and listed 4 downstream assets from DataHub lineage.
+After deduplicating the dbt and DuckDB representations, the guardian was run
+again on commit `563e244d1cdfd522150fb46232eebbe255a0883b`:
+
+https://github.com/Adarsh-Dhar/datadog-github/actions/runs/29816238044
+
+That run passed and updated the same bot comment. It reported `stg_orders` as
+HIGH risk, detected the dropped `customer_id` column, and listed exactly 2
+downstream assets from DataHub lineage: `dim_customers` and `fct_revenue`.
 
 ## Schema: `updateDescription`
 
