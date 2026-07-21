@@ -15,7 +15,7 @@ downstream DataHub lineage is shown below.
 Manual proof comment:
 https://github.com/Adarsh-Dhar/datadog-github/pull/2#issuecomment-5031511090
 
-The GitHub Action run reached the DataHub GraphQL lookup and failed with:
+The first GitHub Action run reached the DataHub GraphQL lookup and failed with:
 
 ```text
 Error: DataHub GraphQL request failed (404): {}
@@ -24,6 +24,17 @@ Error: DataHub GraphQL request failed (404): {}
 This failure was caused by the saved `DATAHUB_GMS_URL` pointing to an expired
 temporary ngrok tunnel. It does not invalidate the local DataHub schema,
 lineage, or writeback proof captured below.
+
+A fresh ngrok URL was then created and saved back to `DATAHUB_GMS_URL`. The
+rerun reached the new tunnel and failed with:
+
+```text
+Error: DataHub GraphQL request failed (502): {}
+```
+
+That means the tunnel itself was reachable, but local DataHub was not listening
+on `localhost:8080` because Docker Desktop was not exposing a working Docker
+daemon.
 
 ## Schema: `updateDescription`
 
