@@ -107,8 +107,9 @@ deduplication path.
 The action's `getDownstreamImpact("stg_orders")` function initially found both
 the dbt model and its DuckDB representation for each downstream asset. The
 guardian now collapses platform-qualified names to their logical model name,
-keeps the closest lineage edge, and combines any owners. The same live lookup
-now returns exactly two downstream assets:
+keeps the closest lineage edge, and combines any owners. After adding
+`meta.owner: Adarsh-Dhar` to the dbt models and re-ingesting, the same live
+lookup returns exactly two owned downstream assets:
 
 ```json
 [
@@ -117,17 +118,67 @@ now returns exactly two downstream assets:
     "type": "DATASET",
     "name": "dim_customers",
     "degree": 1,
-    "owners": []
+    "owners": [
+      "Adarsh-Dhar"
+    ]
   },
   {
     "urn": "urn:li:dataset:(urn:li:dataPlatform:dbt,pr_guardian_demo.main.fct_revenue,PROD)",
     "type": "DATASET",
     "name": "fct_revenue",
     "degree": 1,
-    "owners": []
+    "owners": [
+      "Adarsh-Dhar"
+    ]
   }
 ]
 ```
 
-The fixture intentionally has no ownership metadata yet, so the action reports
-these assets as unowned rather than inventing an owner.
+The real guardian comment on PR #3 now names `Adarsh-Dhar` as the downstream
+owner rather than reporting these assets as unowned:
+
+https://github.com/Adarsh-Dhar/datadog-github/pull/3#issuecomment-5032138869
+
+## Automated writeback on merge
+
+PR #3 merged at `2026-07-21T09:08:38Z`:
+
+https://github.com/Adarsh-Dhar/datadog-github/pull/3
+
+The top-level `writeback.yml` workflow fired from that merge and completed
+successfully at `2026-07-21T09:09:01Z`:
+
+https://github.com/Adarsh-Dhar/datadog-github/actions/runs/29817075422/job/88590811919
+
+Its CI log says `Wrote a DataHub review note for stg_orders.`, proving that the
+write came from the merged-PR workflow rather than a manual local invocation.
+
+### Before automated merge
+
+```json
+{
+  "data": {
+    "dataset": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.stg_orders,PROD)",
+      "editableProperties": null,
+      "properties": null
+    }
+  }
+}
+```
+
+### After automated merge
+
+```json
+{
+  "data": {
+    "dataset": {
+      "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.stg_orders,PROD)",
+      "editableProperties": {
+        "description": "[PR Guardian] Reviewed in PR #3. Severity: high."
+      },
+      "properties": null
+    }
+  }
+}
+```
