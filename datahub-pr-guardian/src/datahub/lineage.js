@@ -41,12 +41,44 @@ function ownerNames(entity) {
     .filter(Boolean);
 }
 
+function canonicalAssetName(name) {
+  // dbt entities use model names (for example, "fct_revenue"), while the
+  // matching DuckDB entity is qualified ("pr_guardian_demo.main.fct_revenue").
+  // Use the final identifier so the same logical asset appears once in a PR.
+  return String(name || "").trim().toLowerCase().split(".").at(-1);
+}
+
+function dedupeImpactByName(assets) {
+  const byName = new Map();
+
+  for (const asset of assets) {
+    const key = asset.type + ":" + canonicalAssetName(asset.name);
+    const existing = byName.get(key);
+
+    if (!existing) {
+      byName.set(key, asset);
+      continue;
+    }
+
+    // Prefer the closest lineage edge, but retain owners recorded on either
+    // representation of the same logical asset.
+    const preferred = asset.degree < existing.degree ? asset : existing;
+    const other = preferred === asset ? existing : asset;
+    byName.set(key, {
+      ...preferred,
+      owners: [...new Set([...preferred.owners, ...other.owners])],
+    });
+  }
+
+  return [...byName.values()];
+}
+
 async function getDownstreamImpact(modelName) {
   const urn = modelNameToUrn(modelName);
   const data = await graphqlRequest(DOWNSTREAM_QUERY, { urn });
   const results = data?.searchAcrossLineage?.searchResults || [];
 
-  return results.map((result) => {
+  const assets = results.map((result) => {
     const entity = result.entity;
     return {
       urn: entity.urn,
@@ -56,6 +88,8 @@ async function getDownstreamImpact(modelName) {
       owners: ownerNames(entity),
     };
   });
+
+  return dedupeImpactByName(assets);
 }
 
-module.exports = { DOWNSTREAM_QUERY, getDownstreamImpact };
+module.exports = { DOWNSTREAM_QUERY, dedupeImpactByName, getDownstreamImpact };

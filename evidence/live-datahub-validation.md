@@ -96,9 +96,13 @@ The second writeback appended to the first. Repeating the same writeback
 returned `{ "updateDescription": false, "skipped": true }`, proving the
 deduplication path.
 
-## Live downstream-lineage result
+## Live downstream-lineage result after deduplication
 
-The action's `getDownstreamImpact("stg_orders")` function returned:
+The action's `getDownstreamImpact("stg_orders")` function initially found both
+the dbt model and its DuckDB representation for each downstream asset. The
+guardian now collapses platform-qualified names to their logical model name,
+keeps the closest lineage edge, and combines any owners. The same live lookup
+now returns exactly two downstream assets:
 
 ```json
 [
@@ -114,20 +118,6 @@ The action's `getDownstreamImpact("stg_orders")` function returned:
     "type": "DATASET",
     "name": "fct_revenue",
     "degree": 1,
-    "owners": []
-  },
-  {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.dim_customers,PROD)",
-    "type": "DATASET",
-    "name": "pr_guardian_demo.main.dim_customers",
-    "degree": 2,
-    "owners": []
-  },
-  {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.fct_revenue,PROD)",
-    "type": "DATASET",
-    "name": "pr_guardian_demo.main.fct_revenue",
-    "degree": 2,
     "owners": []
   }
 ]
