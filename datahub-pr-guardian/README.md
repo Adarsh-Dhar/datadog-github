@@ -35,10 +35,11 @@ the reviewed impact in DataHub.
    dbt seed --profiles-dir .
    dbt build --profiles-dir .
    dbt docs generate --profiles-dir .
-   datahub ingest -c datahub-ingestion.yml
+   datahub ingest run -c datahub-ingestion.yml
    ~~~
 
-3. Add these repository secrets:
+3. Add these repository secrets. DATAHUB_GMS_URL must be reachable from
+   GitHub-hosted runners; localhost only works for local validation.
 
    - DATAHUB_GMS_URL: the URL of your DataHub GMS service.
    - DATAHUB_TOKEN: a DataHub personal access token.
@@ -70,11 +71,14 @@ its dataset name includes a database or schema.
 The lineaged lookup uses DataHub GraphQL searchAcrossLineage with DOWNSTREAM
 direction and degree 1 and 2 filters. The writeback mutation is intentionally
 isolated in src/datahub/writeback.js because its exact mutation shape varies by
-DataHub release; verify it against your deployed schema before enabling it.
+DataHub release. It was validated with local DataHub v1.5.0.6 and appends each
+review once to the dataset's editable description; verify it against your
+deployed schema before enabling it.
 
 ## Demo flow
 
 Open a pull request in pr-guardian-demo that removes customer_id from
-models/marts/fct_revenue.sql. Once that model has been ingested, the PR comment
-should identify the affected lineage and its owners. A rendered example is in
-examples/sample-pr-comment.md.
+models/staging/stg_orders.sql. Once the baseline project has been ingested, the
+PR comment should identify fct_revenue and dim_customers as downstream assets.
+After the PR is merged, the demo writeback workflow appends its review to the
+changed asset in DataHub. A rendered example is in examples/sample-pr-comment.md.

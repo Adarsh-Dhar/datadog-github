@@ -1,5 +1,5 @@
 # Run dbt parse (and dbt docs generate when a warehouse is available) first,
-# then run: datahub ingest -c datahub-ingestion.yml
+# then run: datahub ingest run -c datahub-ingestion.yml
 source:
   type: dbt
   config:

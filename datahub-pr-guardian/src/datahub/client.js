@@ -2,18 +2,16 @@ const config = require("../config");
 
 function requireDataHubConfig() {
   if (!config.datahubGmsUrl) throw new Error("DATAHUB_GMS_URL is required.");
-  if (!config.datahubToken) throw new Error("DATAHUB_TOKEN is required.");
 }
 
 async function graphqlRequest(query, variables = {}) {
   requireDataHubConfig();
   const endpoint = new URL("/api/graphql", config.datahubGmsUrl).toString();
+  const headers = { "Content-Type": "application/json" };
+  if (config.datahubToken) headers.Authorization = "Bearer " + config.datahubToken;
   const response = await fetch(endpoint, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + config.datahubToken,
-    },
+    headers,
     body: JSON.stringify({ query, variables }),
   });
   const json = await response.json().catch(() => ({}));
