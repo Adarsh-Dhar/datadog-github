@@ -36,6 +36,20 @@ That means the tunnel itself was reachable, but local DataHub was not listening
 on `localhost:8080` because Docker Desktop was not exposing a working Docker
 daemon.
 
+After Docker/DataHub restarted successfully, a new working ngrok tunnel was
+created and saved to `DATAHUB_GMS_URL`. The same PR workflow was rerun and
+passed:
+
+```text
+guardian pass 22s
+```
+
+The GitHub Actions bot posted the real PR Guardian comment:
+https://github.com/Adarsh-Dhar/datadog-github/pull/2#issuecomment-5031829798
+
+The comment reported `stg_orders` as HIGH risk, detected the dropped
+`customer_id` column, and listed 4 downstream assets from DataHub lineage.
+
 ## Schema: `updateDescription`
 
 ```text
