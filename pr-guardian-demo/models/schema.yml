@@ -17,6 +17,8 @@ sources:
 models:
   - name: stg_orders
     description: Cleaned order records used by the finance marts.
+    meta:
+      owner: Adarsh-Dhar
     columns:
       - name: order_id
         tests: [not_null, unique]
@@ -24,6 +26,8 @@ models:
         tests: [not_null]
   - name: fct_revenue
     description: Completed orders used for revenue reporting.
+    meta:
+      owner: Adarsh-Dhar
     columns:
       - name: order_id
         tests: [not_null, unique]
@@ -31,6 +35,8 @@ models:
         description: Customer identifier used to filter revenue dashboards.
   - name: dim_customers
     description: Customer-level lifetime revenue metrics.
+    meta:
+      owner: Adarsh-Dhar
     columns:
       - name: customer_id
         tests: [not_null, unique]
