@@ -12,7 +12,11 @@ inputs:
     required: true
   llm-token:
     description: GitHub Models token used to generate the impact summary
-    required: true
+    required: false
+  mode:
+    description: Run analyze for a PR comment or writeback after a merged PR
+    required: false
+    default: analyze
   datahub-platform:
     description: DataHub platform recorded for the dbt target
     required: false
@@ -35,7 +39,7 @@ runs:
       shell: bash
       working-directory: ${{ github.action_path }}
       run: npm install --no-audit --no-fund
-    - name: Analyze pull-request impact
+    - name: Run PR Guardian
       shell: bash
       working-directory: ${{ github.workspace }}
       env:
@@ -51,4 +55,9 @@ runs:
         REPO_NAME: ${{ github.event.repository.name }}
         BASE_SHA: ${{ github.event.pull_request.base.sha }}
         HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-      run: node "${{ github.action_path }}/src/index.js"
+      run: |
+        if [ "${{ inputs.mode }}" = "writeback" ]; then
+          node "${{ github.action_path }}/src/writebackRunner.js"
+        else
+          node "${{ github.action_path }}/src/index.js"
+        fi
