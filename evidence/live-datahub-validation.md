@@ -47,8 +47,14 @@ guardian pass 22s
 The GitHub Actions bot posted the real PR Guardian comment:
 https://github.com/Adarsh-Dhar/datadog-github/pull/2#issuecomment-5031829798
 
-The comment reported `stg_orders` as HIGH risk, detected the dropped
-`customer_id` column, and listed 4 downstream assets from DataHub lineage.
+After deduplicating the dbt and DuckDB representations, the guardian was run
+again on commit `563e244d1cdfd522150fb46232eebbe255a0883b`:
+
+https://github.com/Adarsh-Dhar/datadog-github/actions/runs/29816238044
+
+That run passed and updated the same bot comment. It reported `stg_orders` as
+HIGH risk, detected the dropped `customer_id` column, and listed exactly 2
+downstream assets from DataHub lineage: `dim_customers` and `fct_revenue`.
 
 ## Schema: `updateDescription`
 
@@ -96,9 +102,13 @@ The second writeback appended to the first. Repeating the same writeback
 returned `{ "updateDescription": false, "skipped": true }`, proving the
 deduplication path.
 
-## Live downstream-lineage result
+## Live downstream-lineage result after deduplication
 
-The action's `getDownstreamImpact("stg_orders")` function returned:
+The action's `getDownstreamImpact("stg_orders")` function initially found both
+the dbt model and its DuckDB representation for each downstream asset. The
+guardian now collapses platform-qualified names to their logical model name,
+keeps the closest lineage edge, and combines any owners. The same live lookup
+now returns exactly two downstream assets:
 
 ```json
 [
@@ -114,20 +124,6 @@ The action's `getDownstreamImpact("stg_orders")` function returned:
     "type": "DATASET",
     "name": "fct_revenue",
     "degree": 1,
-    "owners": []
-  },
-  {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.dim_customers,PROD)",
-    "type": "DATASET",
-    "name": "pr_guardian_demo.main.dim_customers",
-    "degree": 2,
-    "owners": []
-  },
-  {
-    "urn": "urn:li:dataset:(urn:li:dataPlatform:duckdb,pr_guardian_demo.main.fct_revenue,PROD)",
-    "type": "DATASET",
-    "name": "pr_guardian_demo.main.fct_revenue",
-    "degree": 2,
     "owners": []
   }
 ]
