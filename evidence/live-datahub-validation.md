@@ -2,9 +2,28 @@
 
 Captured locally on 2026-07-21 against a running DataHub v1.5.0.6 instance.
 The GraphQL requests below were also verified through a temporary public tunnel
-used for the GitHub Actions test. These are DataHub integration artifacts; the
-separate GitHub pull-request comment still requires a signed-in GitHub session
-and repository secrets.
+used for the GitHub Actions test.
+
+## GitHub pull-request proof
+
+Proof PR: https://github.com/Adarsh-Dhar/datadog-github/pull/2
+
+The PR intentionally removes `customer_id` from
+`pr-guardian-demo/models/staging/stg_orders.sql`, which is the model whose
+downstream DataHub lineage is shown below.
+
+Manual proof comment:
+https://github.com/Adarsh-Dhar/datadog-github/pull/2#issuecomment-5031511090
+
+The GitHub Action run reached the DataHub GraphQL lookup and failed with:
+
+```text
+Error: DataHub GraphQL request failed (404): {}
+```
+
+This failure was caused by the saved `DATAHUB_GMS_URL` pointing to an expired
+temporary ngrok tunnel. It does not invalidate the local DataHub schema,
+lineage, or writeback proof captured below.
 
 ## Schema: `updateDescription`
 
