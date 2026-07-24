@@ -31,7 +31,12 @@ function splitSelectList(selectBody) {
 }
 
 function extractSelectBody(sql) {
-  const match = sql.match(/\bselect\b([\s\S]*?)\bfrom\b/i);
+  // Handle CTEs by finding the last SELECT before FROM
+  const ctePattern = /\bwith\b[\s\S]*?\)\s*\bselect\b([\s\S]*?)\bfrom\b/i;
+  const normalPattern = /\bselect\b([\s\S]*?)\bfrom\b/i;
+  
+  // Try CTE pattern first, then normal pattern
+  const match = sql.match(ctePattern) || sql.match(normalPattern);
   return match ? match[1] : "";
 }
 
@@ -65,13 +70,6 @@ function columnFromExpression(expression) {
   const extractedType = (fullCastTypeMatch || fullShorthandTypeMatch)
     ? (fullCastTypeMatch || fullShorthandTypeMatch)[1].replace(/\s+/g, " ").toLowerCase()
     : null;
-
-  // Debug logging
-  if (expressionWithoutAlias.toLowerCase().includes('cast')) {
-    console.log(`DEBUG: expressionWithoutAlias="${expressionWithoutAlias}"`);
-    console.log(`DEBUG: fullCastTypeMatch=${fullCastTypeMatch ? fullCastTypeMatch[1] : 'null'}`);
-    console.log(`DEBUG: extractedType=${extractedType}`);
-  }
 
   return {
     name,
