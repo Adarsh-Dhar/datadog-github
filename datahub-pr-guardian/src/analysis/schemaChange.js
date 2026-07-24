@@ -78,7 +78,9 @@ function extractColumns(sql) {
 }
 
 function extractJoinKeys(sql) {
-  return [...sql.matchAll(/\bjoin\b[\s\S]*?\bon\b\s*([^\n;]+?)(?=\bjoin\b|\bwhere\b|\bgroup\b|\border\b|$)/gi)]
+  // Improved regex to capture join conditions more accurately
+  const joinPattern = /\bjoin\b[\s\S]*?\bon\b\s*([^\n;]+?)(?=\bjoin\b|\bwhere\b|\bgroup\b|\border\b|\bhaving\b|\bunion\b|$)/gi;
+  return [...sql.matchAll(joinPattern)]
     .map((match) => match[1].replace(/\s+/g, " ").trim().toLowerCase());
 }
 
