@@ -106,9 +106,15 @@ function extractColumns(sql) {
 
 function extractJoinKeys(sql) {
   // Improved regex to capture join conditions more accurately
+  // Match from JOIN keyword through ON clause, stopping at common SQL keywords
   const joinPattern = /\bjoin\b[\s\S]*?\bon\b\s*([^\n;]+?)(?=\bjoin\b|\bwhere\b|\bgroup\b|\border\b|\bhaving\b|\bunion\b|$)/gi;
-  return [...sql.matchAll(joinPattern)]
+  const matches = [...sql.matchAll(joinPattern)]
     .map((match) => match[1].replace(/\s+/g, " ").trim().toLowerCase());
+  
+  // Also log to stderr for debugging
+  console.error(`DEBUG extractJoinKeys: ${JSON.stringify(matches)}`);
+  
+  return matches;
 }
 
 function analyzeSchemaChange(baseSql, headSql) {
