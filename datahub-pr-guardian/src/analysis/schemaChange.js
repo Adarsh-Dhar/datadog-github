@@ -62,12 +62,21 @@ function columnFromExpression(expression) {
     /::\s*([a-z][\w]*(?:\s*\([^,)]*(?:,\s*[^)]*)?\))?)/i,
   );
 
+  const extractedType = (fullCastTypeMatch || fullShorthandTypeMatch)
+    ? (fullCastTypeMatch || fullShorthandTypeMatch)[1].replace(/\s+/g, " ").toLowerCase()
+    : null;
+
+  // Debug logging
+  if (expressionWithoutAlias.toLowerCase().includes('cast')) {
+    console.log(`DEBUG: expressionWithoutAlias="${expressionWithoutAlias}"`);
+    console.log(`DEBUG: fullCastTypeMatch=${fullCastTypeMatch ? fullCastTypeMatch[1] : 'null'}`);
+    console.log(`DEBUG: extractedType=${extractedType}`);
+  }
+
   return {
     name,
     expression: expressionWithoutAlias.replace(/\s+/g, " ").toLowerCase(),
-    type: (fullCastTypeMatch || fullShorthandTypeMatch)
-      ? (fullCastTypeMatch || fullShorthandTypeMatch)[1].replace(/\s+/g, " ").toLowerCase()
-      : null,
+    type: extractedType,
   };
 }
 
