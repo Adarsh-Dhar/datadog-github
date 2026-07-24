@@ -36,6 +36,10 @@ function changeDetails(diff) {
 }
 
 function renderSection(diff, downstreamImpact, assessment) {
+  // Debug: add join key information to the PR comment
+  const debugInfo = diff.joinKeyChanges ? 
+    `\n\n**DEBUG - Join Keys:**\n- Removed: ${JSON.stringify(diff.joinKeyChanges.removed)}\n- Added: ${JSON.stringify(diff.joinKeyChanges.added)}` : "";
+  
   const affectedAssets = downstreamImpact.length
     ? downstreamImpact
         .map(
@@ -62,6 +66,7 @@ function renderSection(diff, downstreamImpact, assessment) {
     ...changeDetails(diff).map((detail) => "**" + detail.split(": ")[0] + ":** " + detail.split(": ").slice(1).join(": ")),
     "**Downstream assets affected:** " + downstreamImpact.length,
     affectedAssets,
+    debugInfo,
     "",
     assessment.summary,
   ].join("\n");
@@ -85,11 +90,6 @@ async function run() {
     if (diff.isNew) {
       console.log("Skipping new model " + diff.modelName + "; it has no existing lineage.");
       continue;
-    }
-    
-    // Debug: log join key changes
-    if (diff.joinKeyChanges && (diff.joinKeyChanges.removed.length > 0 || diff.joinKeyChanges.added.length > 0)) {
-      console.log(`Join key changes detected for ${diff.modelName}:`, JSON.stringify(diff.joinKeyChanges));
     }
     
     if (!hasBreakingChange(diff)) {
