@@ -105,9 +105,9 @@ function extractColumns(sql) {
 }
 
 function extractJoinKeys(sql) {
-  // Improved regex to capture join conditions more accurately
-  // Match from JOIN keyword through ON clause, stopping at common SQL keywords
-  const joinPattern = /\bjoin\b[\s\S]*?\bon\b\s*([^\n;]+?)(?=\bjoin\b|\bwhere\b|\bgroup\b|\border\b|\bhaving\b|\bunion\b|$)/gi;
+  // Simplified regex to capture join conditions
+  // Match JOIN ... ON ... stopping at WHERE or end
+  const joinPattern = /join\s+[\s\S]*?on\s+([^\n;]+?)(?=\s+where|\s+group|\s+order|\s+having|\s+union|\s*join|$)/gi;
   const matches = [...sql.matchAll(joinPattern)]
     .map((match) => match[1].replace(/\s+/g, " ").trim().toLowerCase());
   
@@ -156,12 +156,6 @@ function analyzeSchemaChange(baseSql, headSql) {
   const headJoinKeys = new Set(extractJoinKeys(headSql));
   const removedJoinKeys = [...baseJoinKeys].filter((key) => !headJoinKeys.has(key));
   const addedJoinKeys = [...headJoinKeys].filter((key) => !baseJoinKeys.has(key));
-  
-  // Debug logging for join key comparison
-  console.log(`BASE JOIN KEYS: ${JSON.stringify([...baseJoinKeys])}`);
-  console.log(`HEAD JOIN KEYS: ${JSON.stringify([...headJoinKeys])}`);
-  console.log(`REMOVED JOIN KEYS: ${JSON.stringify(removedJoinKeys)}`);
-  console.log(`ADDED JOIN KEYS: ${JSON.stringify(addedJoinKeys)}`);
 
   return {
     droppedColumns: droppedColumns.filter(
