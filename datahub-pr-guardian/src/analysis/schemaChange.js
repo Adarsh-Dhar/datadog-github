@@ -60,15 +60,35 @@ function columnFromExpression(expression) {
   );
 
   // Extract full type including numbers and commas for precision types like decimal(10, 2)
-  const fullCastTypeMatch = expressionWithoutAlias.match(
-    /\bcast\s*\([\s\S]*?\s+as\s+([^)]+)\s*\)/i,
+  // Use a function to handle balanced parentheses properly
+  const extractCastType = (expr, pattern) => {
+    const match = expr.match(pattern);
+    if (!match) return null;
+    const typePart = match[1];
+    let depth = 0;
+    let result = "";
+    for (let i = 0; i < typePart.length; i++) {
+      const char = typePart[i];
+      if (char === "(") depth++;
+      else if (char === ")") {
+        if (depth === 0) break;
+        depth--;
+      }
+      result += char;
+    }
+    return result.trim();
+  };
+  const fullCastTypeMatch = extractCastType(
+    expressionWithoutAlias,
+    /\bcast\s*\([\s\S]*?\s+as\s+([^\)]*(?:\([^\)]*\)[^\)]*)*)/i,
   );
-  const fullShorthandTypeMatch = expressionWithoutAlias.match(
-    /::\s*([a-z][\w]*(?:\s*\([^,)]*(?:,\s*[^)]*)?\))?)/i,
+  const fullShorthandTypeMatch = extractCastType(
+    expressionWithoutAlias,
+    /::\s*([a-z][\w]*(?:\s*\([^)]*\))?)/i,
   );
 
   const extractedType = (fullCastTypeMatch || fullShorthandTypeMatch)
-    ? (fullCastTypeMatch || fullShorthandTypeMatch)[1].replace(/\s+/g, " ").toLowerCase()
+    ? (fullCastTypeMatch || fullShorthandTypeMatch).replace(/\s+/g, " ").toLowerCase()
     : null;
 
   return {
