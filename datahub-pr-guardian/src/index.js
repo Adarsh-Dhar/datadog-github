@@ -86,6 +86,12 @@ async function run() {
       console.log("Skipping new model " + diff.modelName + "; it has no existing lineage.");
       continue;
     }
+    
+    // Debug: log join key changes
+    if (diff.joinKeyChanges && (diff.joinKeyChanges.removed.length > 0 || diff.joinKeyChanges.added.length > 0)) {
+      console.log(`Join key changes detected for ${diff.modelName}:`, JSON.stringify(diff.joinKeyChanges));
+    }
+    
     if (!hasBreakingChange(diff)) {
       console.log("No breaking schema change detected for " + diff.modelName + ".");
       continue;
