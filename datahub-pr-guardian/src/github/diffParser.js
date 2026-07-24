@@ -33,6 +33,15 @@ function diffModel(filePath) {
       "show",
       requireGitRef("BASE_SHA", config.baseSha) + ":" + filePath,
     ]).toString();
+    
+    // Debug logging
+    console.log(`=== diffModel for ${filePath} ===`);
+    console.log(`BASE_SHA: ${config.baseSha}`);
+    console.log(`HEAD_SHA: ${config.headSha}`);
+    console.log(`Base content length: ${baseContent.length}`);
+    console.log(`Head content length: ${headContent.length}`);
+    console.log(`Base content preview: ${baseContent.substring(0, 200)}...`);
+    console.log(`Head content preview: ${headContent.substring(0, 200)}...`);
   } catch {
     return {
       modelPath: filePath,
@@ -43,12 +52,16 @@ function diffModel(filePath) {
     };
   }
 
-  return {
+  const result = {
     modelPath: filePath,
     modelName: filePath.split("/").pop().replace(/\.sql$/, ""),
     isNew: false,
     ...analyzeSchemaChange(baseContent, headContent),
   };
+  
+  console.log(`Schema change result: ${JSON.stringify(result, null, 2)}`);
+  
+  return result;
 }
 
 module.exports = { getChangedModels, diffModel };
