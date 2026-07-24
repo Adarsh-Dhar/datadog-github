@@ -74,6 +74,11 @@ async function run() {
     return;
   }
 
+  const skipDatahub = process.env.SKIP_DATAHUB === "true";
+  if (skipDatahub) {
+    console.log("Skipping DataHub lineage calls (SKIP_DATAHUB=true).");
+  }
+
   const sections = [];
   for (const file of changedFiles) {
     const diff = diffModel(file);
@@ -86,7 +91,7 @@ async function run() {
       continue;
     }
 
-    const downstreamImpact = await getDownstreamImpact(diff.modelName);
+    const downstreamImpact = skipDatahub ? [] : await getDownstreamImpact(diff.modelName);
     const assessment = await summarizeRisk(diff, downstreamImpact);
     sections.push(renderSection(diff, downstreamImpact, assessment));
   }
