@@ -156,6 +156,12 @@ function analyzeSchemaChange(baseSql, headSql) {
   const headJoinKeys = new Set(extractJoinKeys(headSql));
   const removedJoinKeys = [...baseJoinKeys].filter((key) => !headJoinKeys.has(key));
   const addedJoinKeys = [...headJoinKeys].filter((key) => !baseJoinKeys.has(key));
+  
+  // Debug logging for join key comparison
+  console.log(`BASE JOIN KEYS: ${JSON.stringify([...baseJoinKeys])}`);
+  console.log(`HEAD JOIN KEYS: ${JSON.stringify([...headJoinKeys])}`);
+  console.log(`REMOVED JOIN KEYS: ${JSON.stringify(removedJoinKeys)}`);
+  console.log(`ADDED JOIN KEYS: ${JSON.stringify(addedJoinKeys)}`);
 
   return {
     droppedColumns: droppedColumns.filter(
