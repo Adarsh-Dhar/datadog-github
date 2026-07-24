@@ -56,7 +56,7 @@ function columnFromExpression(expression) {
 
   // Extract full type including numbers and commas for precision types like decimal(10, 2)
   const fullCastTypeMatch = expressionWithoutAlias.match(
-    /\bcast\s*\([\s\S]*?\s+as\s+([a-z][\w]*(?:\s*\([^,)]*(?:,\s*[^)]*)?\))?)/i,
+    /\bcast\s*\([\s\S]*?\s+as\s+([^)]+)\s*\)/i,
   );
   const fullShorthandTypeMatch = expressionWithoutAlias.match(
     /::\s*([a-z][\w]*(?:\s*\([^,)]*(?:,\s*[^)]*)?\))?)/i,
