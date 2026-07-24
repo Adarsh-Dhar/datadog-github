@@ -89,11 +89,21 @@ async function run() {
       continue;
     }
     
-    // Collect debug info for join keys
+    // Collect debug info for join keys and SQL content
     if (diff.joinKeyChanges) {
       debugInfo.push(`**${diff.modelName} Join Keys:**`);
       debugInfo.push(`- Removed: ${JSON.stringify(diff.joinKeyChanges.removed)}`);
       debugInfo.push(`- Added: ${JSON.stringify(diff.joinKeyChanges.added)}`);
+    }
+    
+    // Also collect SQL content for debugging
+    if (diff.baseSql) {
+      debugInfo.push(`**${diff.modelName} Base SQL (first 200 chars):**`);
+      debugInfo.push(`\`${diff.baseSql.substring(0, 200).replace(/\n/g, ' ')}...\``);
+    }
+    if (diff.headSql) {
+      debugInfo.push(`**${diff.modelName} Head SQL (first 200 chars):**`);
+      debugInfo.push(`\`${diff.headSql.substring(0, 200).replace(/\n/g, ' ')}...\``);
     }
     
     if (!hasBreakingChange(diff)) {
