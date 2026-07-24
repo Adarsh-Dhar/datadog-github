@@ -105,6 +105,9 @@ function extractColumns(sql) {
 }
 
 function extractJoinKeys(sql) {
+  // Debug: log the SQL content being processed
+  console.log(`SQL CONTENT FOR JOIN EXTRACTION: ${sql.substring(0, 300)}...`);
+  
   // Simplified regex to capture join conditions
   // Match JOIN ... ON ... stopping at WHERE or end
   const joinPattern = /join\s+[\s\S]*?on\s+([^\n;]+?)(?=\s+where|\s+group|\s+order|\s+having|\s+union|\s*join|$)/gi;
