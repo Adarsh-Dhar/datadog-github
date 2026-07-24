@@ -93,12 +93,8 @@ async function run() {
     debugInfo.push(`**${diff.modelName} Join Keys:**`);
     debugInfo.push(`- Removed: ${JSON.stringify(diff.joinKeyChanges?.removed || [])}`);
     debugInfo.push(`- Added: ${JSON.stringify(diff.joinKeyChanges?.added || [])}`);
-    
-    // Also collect SQL content for debugging
-    debugInfo.push(`**${diff.modelName} Base SQL (first 200 chars):**`);
-    debugInfo.push(`\`${(diff.baseSql || '').substring(0, 200).replace(/\n/g, ' ')}...\``);
-    debugInfo.push(`**${diff.modelName} Head SQL (first 200 chars):**`);
-    debugInfo.push(`\`${(diff.headSql || '').substring(0, 200).replace(/\n/g, ' ')}...\``);
+    debugInfo.push(`**${diff.modelName} Base SQL length:** ${diff.baseSql?.length || 0}`);
+    debugInfo.push(`**${diff.modelName} Head SQL length:** ${diff.headSql?.length || 0}`);
     
     if (!hasBreakingChange(diff)) {
       console.log("No breaking schema change detected for " + diff.modelName + ".");
