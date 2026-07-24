@@ -111,8 +111,8 @@ function extractJoinKeys(sql) {
   const matches = [...sql.matchAll(joinPattern)]
     .map((match) => match[1].replace(/\s+/g, " ").trim().toLowerCase());
   
-  // Also log to stderr for debugging
-  console.error(`DEBUG extractJoinKeys: ${JSON.stringify(matches)}`);
+  // Log join key differences for debugging
+  console.log(`JOIN KEYS EXTRACTED: ${JSON.stringify(matches)}`);
   
   return matches;
 }
@@ -156,6 +156,12 @@ function analyzeSchemaChange(baseSql, headSql) {
   const headJoinKeys = new Set(extractJoinKeys(headSql));
   const removedJoinKeys = [...baseJoinKeys].filter((key) => !headJoinKeys.has(key));
   const addedJoinKeys = [...headJoinKeys].filter((key) => !baseJoinKeys.has(key));
+  
+  // Debug logging for join key comparison
+  console.log(`BASE JOIN KEYS: ${JSON.stringify([...baseJoinKeys])}`);
+  console.log(`HEAD JOIN KEYS: ${JSON.stringify([...headJoinKeys])}`);
+  console.log(`REMOVED JOIN KEYS: ${JSON.stringify(removedJoinKeys)}`);
+  console.log(`ADDED JOIN KEYS: ${JSON.stringify(addedJoinKeys)}`);
 
   return {
     droppedColumns: droppedColumns.filter(
