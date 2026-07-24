@@ -36,10 +36,6 @@ function changeDetails(diff) {
 }
 
 function renderSection(diff, downstreamImpact, assessment) {
-  // Debug: add join key information to the PR comment
-  const debugInfo = diff.joinKeyChanges ? 
-    `\n\n**DEBUG - Join Keys:**\n- Removed: ${JSON.stringify(diff.joinKeyChanges.removed)}\n- Added: ${JSON.stringify(diff.joinKeyChanges.added)}` : "";
-  
   const affectedAssets = downstreamImpact.length
     ? downstreamImpact
         .map(
@@ -66,7 +62,6 @@ function renderSection(diff, downstreamImpact, assessment) {
     ...changeDetails(diff).map((detail) => "**" + detail.split(": ")[0] + ":** " + detail.split(": ").slice(1).join(": ")),
     "**Downstream assets affected:** " + downstreamImpact.length,
     affectedAssets,
-    debugInfo,
     "",
     assessment.summary,
   ].join("\n");
@@ -85,11 +80,20 @@ async function run() {
   }
 
   const sections = [];
+  const debugInfo = []; // Collect debug info for all files
+  
   for (const file of changedFiles) {
     const diff = diffModel(file);
     if (diff.isNew) {
       console.log("Skipping new model " + diff.modelName + "; it has no existing lineage.");
       continue;
+    }
+    
+    // Collect debug info for join keys
+    if (diff.joinKeyChanges) {
+      debugInfo.push(`**${diff.modelName} Join Keys:**`);
+      debugInfo.push(`- Removed: ${JSON.stringify(diff.joinKeyChanges.removed)}`);
+      debugInfo.push(`- Added: ${JSON.stringify(diff.joinKeyChanges.added)}`);
     }
     
     if (!hasBreakingChange(diff)) {
@@ -104,7 +108,8 @@ async function run() {
 
   const body = sections.length
     ? "## 🛡️ DataHub PR Guardian\n\n" + sections.join("\n\n---\n\n")
-    : "✅ **DataHub PR Guardian:** no breaking schema changes detected.";
+    : "✅ **DataHub PR Guardian:** no breaking schema changes detected.\n\n" + 
+      (debugInfo.length ? "## 🔍 Debug Info\n\n" + debugInfo.join("\n") : "");
   const result = await upsertComment(body);
   console.log("PR Guardian comment " + result.action + ".");
 }
